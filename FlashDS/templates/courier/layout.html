@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/flash_icon.png' %}">    
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,100&family=Roboto:ital,wght@1,100&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-messaging.js"></script>
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/flash_icon.png' %}">    
+    <link rel="apple-touch-icon" size="150x150" type="image/png" href="{% static 'images/flash_icon.png' %}">    
+    <link rel="manifest" crossorigin="use-credentials" size="150x150" type="image/png" href="{% static 'manifest.json' %}">    
+    <script src="{% static 'js/firebase.js' %}"></script>    
+    <title>Courier | Flash </title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {%block head %}{% endblock %}
+<script>
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh',`${vh}px`);
+</script>
+<script>
+    const messaging = firebase.messaging();
+    // Request FCM token
+    messaging
+        .getToken({
+            validKey: "BNqgF01WjcCvOh1gbX0Rv2xTCTtYVll390Zynb2DLAoyQveGosov42IpcZj73hHhr4qjfkAwj8YmP9nrZSR33lc"
+        })
+    .then((currentToken) => {
+        if (currentToken) {
+            fetch("{% url 'courier:fcm_token_upgrade_api' %}?fcm_token=" + currentToken);
+        }
+    })
+    .catch((err) => {
+        console.log('Something went wrong', err);
+    });
+    messaging.onMessage((payload) => {
+        window.location.reload();
+    })
+</script>
+</head>
+<body>
+    <div id="content">
+        {% block content %} {% endblock %}
+    </div>
+</body>
+</html>

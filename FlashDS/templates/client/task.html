@@ -1,0 +1,60 @@
+{% extends "client/layout.html" %}
+{% block main %}
+{% if messages %}
+<ul class="messages">
+    <script>
+        {% for message in messages %}
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.warning('{{message}}');
+        {% endfor %}
+    </script>
+</ul>
+{% endif %}
+{% url 'client:current_task' as current_task %}
+{% url 'client:done_task' as done_task %}
+<!--Tasks tabs -->
+<ul class="nav nav-pills nav-fill task-tabs">
+    <li class="nav-item">
+        <a class="nav-link bg-secondary text-white {% if request.path == current_task %} active bg-dark{% endif %}"
+            aria-current="page" href="{%url 'client:current_task' %}">Current Tasks</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link bg-secondary text-white  {% if request.path == done_task %} active bg-dark {% endif %}"
+            aria-current="page" href="{%url 'client:done_task' %}">Previous Task Status</a>
+    </li>
+</ul>
+<!--Tasks-->
+{% if task_status %}
+{% for display in task_status %}
+<div class="col-md-12 mt-3">
+    <div class="card b-1 hover-shadow mb-20">
+        <div class="media card-body">
+            <div class="media-left pr-12">
+                <img class="avatar avatar-xl no-radius"  src="{{display.picture.url}}" alt="...">
+            </div>
+            <div class="media-body">
+                <div class="mb-2">
+                    <span class="fs-20 pr-16">{{display.name}}</span>
+                </div>
+                <h6 class="fs-16 fw-300 ls-1 m-2">{{display.status}}</h6>
+            </div>
+            <div class="media-right text-right d-none d-md-block">
+                <p class="fs-14 text-fade mb-12"><i class="fa-solid fa-location-dot"style="color: #ff0000;"></i> {{display.pickup_address}}</p>
+                <p class="fs-14 text-fade mb-12"><i class="fa-solid fa-flag-checkered" style="color: #278505;"></i> {{display.delivery_address}}</p>
+                <span class="text-fade">{{display.price}} EGP</span>
+            </div>
+        </div>
+        <footer class="card-footer flexbox align-items-center">
+            <div>
+                <strong>Create on:</strong>
+                <span>{{display.created_at}}</span>
+            </div>
+            <div class="card-hover-show">
+                <a class="btn btn-xs fs-10 btn-bold btn-primary" href="{% url 'client:task_status' display.id %}" data-target="#modal-contact">Item Details </a>
+            </div>
+        </footer>
+    </div>
+<hr>
+{% endfor %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "courier/layout.html" %}
+{% load static %}
+{% block head %}
+<script src="{% static 'js/webcam.js' %}"></script>
+<style>
+    body {
+        background-color: #000;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div id="upload-pic-second">
+    <img id="picture">
+    <div class="pic-button">
+        <a id="retake_btn" href="javascript:void(retake_pic())" class="btn btn-warning"><i
+                class="fa-solid fa-repeat m-2"></i>Retake</a>
+        <a id="upload_btn" href="javascript:void(upload_pic())" class="btn btn-success"><i
+                class="fa-solid fa-cloud-arrow-up m-2"></i></i>Upload</a>
+    </div>
+</div>
+<div id="take-pic-first">
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="canvas" class="d-none"></canvas>
+    <a href="{% url 'courier:current_task'%}" class="btn btn-light return-btn "><i
+            class="fa-solid fa-circle-chevron-left m-2"></i>Return</a>
+    <div class="pic-button">
+        {% if task.status == 'Picking' %}
+        <a href="javascript:void(take_photo())" class="btn btn-primary"><i class="fa-solid fa-camera m-2"></i>Take
+            Package picture</a>
+        {% else %}
+        <a href="javascript:void(take_photo())" class="btn btn-primary"><i class="fa-solid fa-camera m-2"></i>Take
+            Delivered picture</a>
+        {% endif %}
+    </div>
+</div>
+<script>
+    const webcamElement = document.getElementById('webcam');
+    const canvasElement = document.getElementById('canvas');
+    const webcam = new Webcam(webcamElement, 'environment', canvasElement);
+    webcam.start();
+
+    function take_photo() {
+        const picture = webcam.snap();
+        document.getElementById('picture').src = picture;
+        document.getElementById('take-pic-first').style.display = 'none';
+        document.getElementById('upload-pic-second').style.display = 'flex';
+    }
+
+    function retake_pic() {
+        document.getElementById('upload-pic-second').style.display = 'none';
+        document.getElementById('take-pic-first').style.display = 'flex';
+    }
+
+function upload_pic() {
+    document.getElementById('canvas').toBlob(function (blob) {
+        var formData = new FormData();
+        var uploadFile = "{% if task.status == 'Picking' %}pickup{% else %}delivery{% endif %}_picture";
+        formData.append(uploadFile, blob, uploadFile + '.png');
+
+        fetch("{% url 'courier:current_task_update_api' task.id %}", {
+            method: 'POST',
+            body: formData,
+        })
+        .then(function (response) { return response.json(); })
+        .then(function (json) {
+            if (json.success) {
+                // Redirect to current task page if the status is 'Picking'
+                if ("{{ task.status }}" === "Picking") {
+                    window.location.href = "{% url 'courier:current_task' %}";
+                } else {
+                    // Redirect to home page for other statuses
+                    window.location.href = "{% url 'courier:task_done' %}";
+                }
+            } else {
+                // Handle the case where the server response indicates failure
+                console.error('Upload failed:', json.error);
+                // You can display an error message to the user if needed
+            }
+        })
+        .catch(function (error) {
+            console.error('Error during fetch:', error);
+            // Handle the error appropriately, e.g., show an error message to the user
+        });
+    });
+}
+
+</script>
+{% endblock %}

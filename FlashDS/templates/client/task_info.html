@@ -1,0 +1,118 @@
+{% extends "client/layout.html" %}
+{% load bootstrap5 %}
+{% load static %}
+{% block head %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAP_API_KEY }}&callback=initMap&libraries=places&v=weekly&region=EG&language=en"defer></script>
+<script src="{% static 'js/directions.js' %}"></script>
+<script>
+var pickup_lat = parseFloat('{{ task_status.pickup_lat }}');
+var pickup_lng = parseFloat('{{ task_status.pickup_lng }}');
+var delivery_lat = parseFloat('{{ task_status.delivery_lat }}');
+var delivery_lng = parseFloat('{{ task_status.delivery_lng }}');
+</script>
+{% endblock %}
+<!--main page-->
+{% block main %}
+<ul class="messages">
+<script>
+    {% for message in messages %}
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.success('{{message}}');
+    {% endfor %}
+</script>
+</ul>
+<div class="container">
+    <div class="row">
+        <div class="col-md-5">
+            <!-- / project-info-box -->
+            <div class="project-info-box">
+                <p><b><i class="fa-solid fa-user"></i></b> {{task_status.pickup_name}}</p>
+                <p><b><i class="fa-solid fa-phone"></i></b> {{task_status.pickup_phone}}</p>
+                <p><b><i class="fa-solid fa-user-clock"></i> </b>{{task_status.delivery_name}}</p>
+                <p><b><i class="fa-solid fa-phone"></i></b> {{task_status.delivery_phone}}</p>
+                <p><b><i class="fa-solid fa-location-dot" style="color: #ff0000;"></i></b>
+                    {{task_status.pickup_address}}</p>
+                <p><b><i class="fa-solid fa-flag-checkered" style="color: #10770e;"></i></b>
+                    {{task_status.delivery_address}}</p>
+                <p class="mb-0"><b class="m-1">Total:</b>{{task_status.price}}EGP</p>
+                {% if task_status.status == 'Processing'%}
+                <form method="POST">
+                        {% csrf_token %}
+                    <button type="submit " class="btn btn-danger mt-2">Cancel Request</button>
+                </form>
+                {% endif %}
+                {% if task_status.status == 'Canceled'%}
+                <p class="mb-0 m-2">{{task_status.status}}<i class="fa-solid fa-triangle-exclamation m-1" style="color: #dc1e1e;"></i></p>
+                {% endif %}
+            </div><!-- / project-info-box -->
+            <h5 class="text-center pick-up-pic">Pick-Up Picture</h5>
+            {% if task_status.pickup_picture %}
+            <div class="project-info-box mt-0 mb-0">
+                <p class="mb-0">
+                    <span class="fw-bold mr-10 va-middle hide-mobile"><img src="{{task_status.pickup_picture.url}}"
+                            alt="" /></span>
+                </p>
+            </div>
+            {% else %}
+            <div class="project-info-box mt-0 mb-0">
+                <p class="mb-0 text-center">
+                    <span class="fw-bold mr-10 va-middle hide-mobile">Image will Upload here <i
+                            class="fa-regular fa-image"></i></span>
+                </p>
+            </div>
+            {% endif %}
+            {% if task_status.delivery_picture%}
+            <h5 class="text-center mt-2 mb-2 Delivery-up-pic">Drlivery Picture</h5>
+            <div class="project-info-box mt-2 mb-2">
+                <p class="mb-0">
+                    <span class="fw-bold mr-10 va-middle hide-mobile"><img src="{{task_status.delivery_picture.url}}"
+                            alt="" /></span>
+                </p>
+            </div>
+            {% else %}
+            <h5 class="text-center mt-2 mb-2 Delivery-up-pic">Drlivery Picture</h5>
+            <div class="project-info-box mt-2 mb-2">
+                <p class="mb-0 text-center">
+                    <span class="fw-bold mr-10 va-middle hide-mobile">Image will Upload here <i
+                            class="fa-regular fa-image"></i></span>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-7">
+            <div class="card">
+            <img src="{{task_status.picture.url}}" alt="project-image" class="rounded">
+            </div>
+            <div class="project-info-box">
+                <div class="project-info-box mt-0">
+                    <h5>{{task_status.name}}</h5>
+                    <h6>{{task_status.category}}</h6>
+                    <p class="mb-0">{{task_status.description}}</p>
+                    <h6 class="mt-1">Quantity : {{task_status.amount}}</h6>
+                    <h6 class="mt-1">Size : {{task_status.size}}</h6>
+                    <div class="card">
+                    <p class="text-center text-muted">Request Create At : {{task_status.created_at}}</p>
+                    </div>
+                </div>
+            </div><!-- / project-info-box -->
+        <div class="col-md-12 mb-2">
+            <div class="card">
+                <div class="card-body map-body">
+                    {% if task_status.status == 'Processing' %}
+                    <h5 class="card-title text-center">{{task_status.status}}<i class="fa-solid fa-circle-notch fa-spin m-2"></i></h5>
+                    {% elif task_status.status == 'Canceled' %}
+                    <h5 class="card-title text-center">{{task_status.status}}<i class="fa-solid fa-triangle-exclamation m-2" style="color: #dc1e1e;"></i></h5>
+                    {% elif task_status.status == 'Completed' %}
+                    <h5 class="card-title text-center">{{task_status.status}}<i class="fa-solid fa-circle-check m-2"></i></h5>
+                    {% else %}
+                    <h5 class="card-title text-center">{{task_status.status}}<i class="fa-solid fa-circle-info fa-fade m-2"></i></h5>
+                    {% endif %}
+                    <hr>
+                    <div id="map" style="width: 100%; height: 200px;"></div>              
+                </div>                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

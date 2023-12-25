@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block head %}{% endblock %}
+{% block content %}
+{% url 'client:job_request' as job_request_hover %}
+{% url 'client:payment' as payment_hover %}
+{% url 'client:profile' as profile_hover %}
+{% url 'client:current_task' as current_task_hover %}
+{% url 'client:done_task' as done_task_hover %}
+<class="container">
+    <div class="main-body mt-2">
+        <!-- /Breadcrumb -->
+        <div class="row gutters-sm d-flex justify-content-end ">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body bg-dark">
+                        <div class="d-flex flex-column align-items-center text-center">
+                            {% comment %} checking if user send requst o cange pic {% endcomment %}
+                            {% if request.user.client.picture %}
+                            <img src="{{request.user.client.picture.url}}" alt="Admin" class="rounded-circle border border-dark  user_profile_pic" width="120">
+                            {% else %}
+                            {% comment %}if not stay at the defualt pic {% endcomment %}
+                            <img src="{% static 'images/client.png' %}" alt="Admin" class="rounded-circle" width="120">
+                            {% endif %}
+                            <div class="mt-5">
+                                <h3 class="text-secondary mb-1 text-white user_name_profile">{{ request.user.get_full_name|title }}</h3>
+                                <p class="text-secondary mb-1 text-white email_profile">{{request.user.email}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="card mt-3 ">
+                    <ul class="list-group list-group-flush">
+                        <a  href="{% url 'client:profile'%}"  class="list-group-item list-group-item-action bg-secondary  {% if request.path == profile_hover %} active bg-dark {% endif %}  d-flex justify-content-between align-items-center flex-wrap">
+                            <span class="text-white tab-profile-fonts">Profile</span>
+                        </a>
+                        <a href="{% url 'client:job_request'%}" class="list-group-item list-group-item-action bg-secondary {% if request.path == job_request_hover %} active bg-dark {% endif %} d-flex  justify-content-between align-items-center flex-wrap ">
+                            <span class="text-white tab-profile-fonts">Create Task Request </span>
+                        </a>
+                        <a href="{% url 'client:current_task'%}"  class="list-group-item list-group-item-action bg-secondary  {% if request.path == current_task_hover or request.path == done_task_hover %} active bg-dark {% endif %}  d-flex justify-content-between align-items-center flex-wrap">
+                            <span class="text-white tab-profile-fonts">My Tasks</span>
+                        </a>
+                        <a href="{% url 'client:payment'%}" class="list-group-item list-group-item-action bg-secondary {% if request.path == payment_hover %} active bg-dark {% endif %} d-flex justify-content-between align-items-center flex-wrap ">
+                            <span class="text-white tab-profile-fonts">Payment Details</span>
+                        </a>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-8">
+                {%block main%}
+                {% endblock %}            
+            </div>
+        </div>
+    </div>
+{% endblock %}

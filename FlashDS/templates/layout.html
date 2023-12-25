@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <!-- jQuery -->
+    <!-- JavaScript -->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
+    <!-- Default theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css" />
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,100&family=Roboto:ital,wght@1,100&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/flash_icon.png' %}">    
+    <link rel="apple-touch-icon" size="150x150" type="image/png" href="{% static 'images/flash_icon.png' %}">    
+    <link rel="manifest" crossorigin="use-credentials" size="150x150" type="image/png" href="{% static 'manifest.json' %}">     
+    <title>Home</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {%block head %}{% endblock %}
+</head>
+<body class="body">
+    <nav class="navbar {% if not request.user.is_authenticated %} navbar-expand-lg {% endif %} navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Flash | Delivery System <img src="{% static "images/flash_icon.png" %}" class="m-1 bg-dark rounded-circle" width="40"/></a>
+        <!--when user click on client during sign out will direct to client page and same Courier--> 
+        {% if not request.user.is_authenticated %}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+                    <li class="nav-item {% if request.GET.next == '/client/' %} active {%endif%}">
+                        <a class="nav-link active" aria-current="page" href="/sign-in/?next=/client/">Client</a>
+                    </li>
+                    <li class="nav-item {% if request.GET.next == '/courier/' %} active {%endif%}">
+                        <a class="nav-link active" aria-current="page" href="/sign-in/?next=/courier/">Courier</a>
+                    </li>
+                </ul>
+            </div>
+            {% elif request.path == '/' %}
+            <form class="form-inline my-5 my-lg-0">
+                {%if request.user.client.picture %}
+                <img src="{{request.user.client.picture.url}}" alt="Admin" class="rounded-circle border border-dark" width="50">
+                {% else %}
+                <img src="{% static 'images/client.png' %}" alt="Admin" class="rounded-circle border border-dark" width="50">
+                {% endif %}
+                <a href="/client/profile/"><span class="mx-sm-3 mb-2 text-white owner_name">{{request.user.get_full_name|title}}</span></a>
+                <a href="/sign-out" class="btn btn-light">Signout</a>
+            </form>
+            {% else %}
+            <form class="form-inline my-5 my-lg-0">
+                <a href="{% url 'home'%}"><span class="mx-sm-3 mb-2 text-white owner_name">Home</span></a>
+                <a href="/sign-out" class="btn btn-light ">Signout</a>
+            </form>
+            {%endif%}
+        </div>
+    </nav>
+    {% block content %} {% endblock %}
+    <footer class="bg-dark text-center  text-white">
+        <div class="text-center p-3" style="background-color:#212529;">
+            &copy;Flash Delivery System.com
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+    "name":"Flash Delivery System",
+    "description":"Delivery application we work 7/24 in week ",
+    "icons":[{
+        "src":"/static/images/logo.png",
+        "type":"image/png",
+        "size":"500x500"
+    }],
+
+    "start_url":"/courier/",
+    "display":"standalone"
+}

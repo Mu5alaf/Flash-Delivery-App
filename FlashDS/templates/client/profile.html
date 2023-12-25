@@ -1,0 +1,76 @@
+{% extends "client/layout.html" %}
+{% load static %}
+{% load bootstrap5 %}
+{% block main %}
+{% if messages %}
+<ul class="messages">
+    <script>
+        {% for message in messages %}
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.success('{{message}}');
+        {% endfor %}
+    </script>
+</ul>
+{% endif %}
+<!-- User information -->
+<h5 class="font-weight-bold mb-4 text-muted">Profile Informations</h5>
+<div class="card bg-white mt-2 mb-5">
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {%bootstrap_form client_form %}
+            <hr>
+            {%bootstrap_form Profile_Pic_Form %}
+            <input type="hidden" name="action" value="update_information">
+            <hr>
+            <button type="submit" class="btn btn-success">Save</button>
+        </form>
+    </div>
+</div>
+
+<!-- User Change password -->
+<h5 class="font-weight-bold mb-4 text-muted">Change password</h5>
+<div class="card bg-white mt-2 mb-5">
+    <div class="card-body" enctype="multipart/form-data">
+        <form method="POST">
+            {% csrf_token %}
+            {%bootstrap_form change_pass_form %}
+            <input type="hidden" name="action" value="update_user_password">
+            <hr>
+            <button type="submit" class="btn btn-success">Save</button>
+        </form>
+    </div>
+</div>
+
+<!-- User mobile auth -->
+<h5 class="font-weight-bold mb-4 text-muted">Phone Number</h5>
+<div class="card bg-white mt-2 mb-5">
+    <div class="card-body">
+        <div id="recaptcha-container"></div>
+        <!-- send mobile code to auth -->
+        <!-- if user have phone number d-none  -->
+        <div id="send-code" class="input-group mb-3 {% if request.user.client.phone_number %} d-none {%endif%}">
+            <input type="text" class="form-control" placeholder="+1 650-555-123" oncopy="return false" oncut="return false" onpaste="return false" >
+            <button class="btn btn-success" type="button">Send Code</button>
+        </div>
+        <!-- if user not have phone number d-none  -->
+        <div id="change_phone" class="input-group mb-3 {% if not request.user.client.phone_number %} d-none {%endif%}">
+            <input type="text" class="form-control" disabled value="{{request.user.client.phone_number}}" oncopy="return false" oncut="return false" onpaste="return false">
+            <button class="btn btn-success" type="button">Change Number</button>
+        </div>
+        <!-- verify mobile code to auth -->
+        <div id="Verify-code" class="input-group mb-3 d-none">
+            <input type="text" class="form-control" placeholder="verification code" oncopy="return false" oncut="return false" onpaste="return false">
+            <button class="btn btn-success" type="button">Verify</button>
+        </div>
+    </div>
+</div>
+</div>
+{% block head %}
+<script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-messaging.js"></script>
+<script src="{% static 'js/firebase.js' %}"></script>
+<script src="{% static 'js/index.js' %}"></script>
+{% endblock %}
+{% endblock %}

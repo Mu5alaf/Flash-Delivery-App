@@ -1,0 +1,50 @@
+{% extends "courier/layout.html" %}
+{% load static %}
+{% block content%}
+<!--header-->
+<div class="media align-items-center bg-warning p-4">
+    <img src="{{request.user.client.picture.url}}" class="rounded-circle" width="60" height="60">
+    <div class="media-body ml-4 m-2">
+        <h5 class="mb-1">{{request.user.get_full_name}}</h5>
+    </div>
+</div>
+<div class=" d-flex flex-column mt-4 p-2 mb-5">
+    <h5 class="text-secondary">Payout</h5>
+    <a href="{% url 'courier:payout_page'%}" class="btn btn-outline-primary btn-block btn-md mt-2">Add</a>
+</div>
+<div class="mt-2 p-2">
+    <b class="text-secondary">Summary</b>
+    <hr>
+    <div class="d-flex text-center">
+        <div class="flex-grow-1">
+            <h4 class="text-success">{{total_service}}EGP</h4>
+            <span class="text-secondary">Total Balance</span>
+        </div>
+        <div class="flex-grow-1">
+            <h4 class="text-success">{{total_tasks}}-Task</h4>
+            <span class="text-secondary">Total Completed Tasks</span>
+        </div>
+        <div class="flex-grow-1">
+            <h4 class="text-success">{{total_dist}}Km</h4>
+            <span class="text-secondary">Driven</span>
+        </div>
+    </div>
+    <hr>
+</div>
+<div class="p-2 d-flex justify-content-center">
+    <a href="/sign-out/" class="btn btn-warning">Log-out<i class="fa-solid fa-right-from-bracket m-2"></i></a>
+</div>
+{% include "courier/tabs.html" %}
+
+<!--alert -->
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <script>
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.success('{{message}}');
+    </script>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

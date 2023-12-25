@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block content %}
+<div class="Container">
+    <div class="row m-2">
+        <div class="col-lg-12">
+            <div class="main-app-title">
+            <h1 class="text-center mt-5 mb-5" >Welcome in Flash Delivery<h1>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="d-flex justify-content-center bg-primary border border-dark">
+            <img src="{% static "images/Delivery Service Review.gif" %}" class="mb-4" width="300"/>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Client</h5>
+                    <p class="card-text">
+                        <span>Sign in  as client to Create A courier Request </span>
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-primary">Create a task Request</li>
+                        <li class="list-group-item list-group-item-primary">Checking your current Request & previous Request</li>
+                        <li class="list-group-item list-group-item-primary">Profile Info</li>
+                        <li class="list-group-item list-group-item-primary">Add Payment Card</li>
+                        <li class="list-group-item list-group-item-primary">couriers capture and proof of Your delivery</li>
+                        </p>
+                        <a href="{% url 'client:home' %}" class="btn btn-primary">Create A Request</a>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="d-flex justify-content-center bg-warning border border-dark">
+            <img src="{% static "images/Delivery Man Calling Customer.gif" %}" class="mb-4" width="300"/>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Courier</h5>
+                    <p class="card-text">
+                        <span>Sign in  as Empolyee with Flash|Delivery</span>
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-warning">Check the Avalibel Tasks</li>
+                        <li class="list-group-item list-group-item-warning">Checking your current task & previous task </li>
+                        <li class="list-group-item list-group-item-warning">Check Clients payment</li>
+                        <li class="list-group-item list-group-item-warning">Upload proof pictuer on pick-up & delevery</li>
+                        <li class="list-group-item list-group-item-warning">Allow couriers to update the status of the delivery (picked up, en route, delivered)</li>
+                        </p>
+                        <a href="{% url 'courier:home' %}" class="btn btn-warning">Do A Request</a>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

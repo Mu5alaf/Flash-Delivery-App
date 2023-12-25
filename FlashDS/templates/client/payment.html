@@ -1,0 +1,107 @@
+{% extends "client/layout.html" %}
+{% load static %}
+{% load bootstrap5%}
+{%block head %}
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+{% block main %}
+{% if not request.user.client.stripe_payment_id %}
+<div class="alert alert-primary alert-dismissible fade show d-flex align-items-center justify-content-center " role="alert">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Info:">
+        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+    </svg>
+    <div>
+        Add Your Card For Easy Payment With Flash
+    </div>
+    <a href="#" class="close p-2 " data-dismiss="alert" aria-label="close"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 30 30">
+        <path d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
+    </svg></a>
+</div>
+{% endif %}
+<h5 class="font-weight-bold mb-4 text-muted">Your Payment Card</h5>
+<div class="card bg-white mt-3 mb-5">
+    <div class="card-body bg-dark">
+        {%if request.user.client.stripe_payment_id%}
+        <div id="change_card" class="input-group">
+            <input type="text" class="form-control" value = "xxxx xxxx xxxx {{request.user.client.stripe_card_last_octet}}" disabled>
+            <div class="input-group-append">
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Remove Card</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <form id="setup-form" data-secret="{{client_secret}}">
+            <div id="card-element"></div>
+            <button id="card-button" class="btn btn-success mt-4" type="button">Submit</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+{% if not request.user.client.stripe_payment_id %}
+<script>
+// Set up the Stripe instance with  publishable key
+var stripe = Stripe("{{STRIPE_API_PUBLISH_KEY}}");
+// Create an instance of the Stripe Elements library
+var elements = stripe.elements();
+// Create a card element and mount it to the specified DOM element
+var cardElement = elements.create('card');
+// Get a reference to the button that will trigger the payment confirmation
+cardElement.mount('#card-element');
+var cardButton = document.getElementById('card-button');
+// Get the client secret for the SetupIntent from your Django template
+var setupIntentClientSecret = "{{ client_secret }}";
+// Add a click event listener to the button
+cardButton.addEventListener('click', function (ev) {
+    // Use Stripe.js to confirm the card setup with the provided client secret
+    stripe.confirmCardSetup(
+        setupIntentClientSecret, {
+        payment_method: {
+            card: cardElement,
+        },
+    }
+    ).then(function (result) {
+        // Handle the result of the confirmation
+        if (result.error) {
+            // If there's an error, show an alert
+            alertify.set('notifier', 'position', 'top-center');
+            alertify.error('Something went wrong');
+        } else {
+            // If successful, show a success alert
+            alertify.set('notifier', 'position', 'top-center');
+            alertify.success('Payment has been added');
+            window.location.reload();
+        }
+    });
+});
+</script>
+<style>
+    /* payment css */
+    .StripeElement {
+        height: 40px;
+        padding: 10px 12px;
+        width: 100%;
+        color: #32325d;
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 5px;
+    }
+    
+    .StripeElement--focus {
+        border-color: #000;
+        box-shadow: #000;
+    }
+    
+    .StripeElement--invalid {
+        border-color: #fa755a;
+    }
+    
+    .StripeElement--webkit-autofill {
+        background-color: #fefde5 !important;
+    }
+</style>
+{% endif %}
+{% endblock %}
+

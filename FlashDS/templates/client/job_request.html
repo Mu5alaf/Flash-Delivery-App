@@ -1,0 +1,235 @@
+{% extends "client/layout.html" %}
+{% load static %}
+{% load bootstrap5%}
+{% block head %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAP_API_KEY }}&callback=initMap&libraries=places&v=weekly&region=EG&language=en"defer></script>
+<script src="{% static 'js/map.js' %}"></script>
+<script>
+    var pickup_latitude = parseFloat('{{ creating_request.pickup_lat }}');
+    var pickup_longitude = parseFloat('{{ creating_request.pickup_lng }}');
+    var delivery_latitude = parseFloat('{{ creating_request.delivery_lat }}');
+    var delivery_longitude = parseFloat('{{ creating_request.delivery_lng }}');
+</script>
+    <script>
+        {% for message in messages %}
+        alertify.set('notifier', 'position', 'top-center');
+        alertify.success('{{message}}');
+        {% endfor %}
+    </script>
+{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <!-- Main content -->
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Details -->
+            <div class="card mb-1 ">
+                <div class="card-body bg-dark h-100" id="job_request_nav">
+                    <!--Right Item-->
+                    <div class="mb-10 d-flex job_request_nav_2 ">
+                        <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="{% if current_step == 1 %} active {% endif %}" id="pills-info-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-info" role="tab"
+                                    aria-controls="pills-info" aria-selected="false" href="#">Item info</a>
+                            </li>
+                            <div class='fa'>
+                                <i class="fa-solid fa-circle-chevron-right fa-xl" style="color: #f4ba1a;"></i>
+                            </div>
+                            <!--Right Take-Up-->
+                            <li class="nav-item" role="presentation">
+                                <a class="{% if current_step == 2 %} active {% endif %}" id="pills-Pickup-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-Pickup" role="tab"
+                                    aria-controls="pills-Pickup" aria-selected="false" href="#">Pick-Up
+                                </a>
+                            </li>
+                            <div class='fa'>
+                                <i class="fa-solid fa-circle-chevron-right fa-xl" style="color: #f4ba1a;"></i>
+                            </div>
+                            <!--Right Delivery-->
+                            <li class="nav-item" role="presentation">
+                                <a class="{% if current_step == 3 %} active {% endif %}" id="pills-Delivery-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-Delivery" role="tab"
+                                    aria-controls="pills-Delivery" aria-selected="false" href="#">Delivery
+                                </a>
+                            </li>
+                            <div class='fa'>
+                                <i class="fa-solid fa-circle-chevron-right fa-xl" style="color: #f4ba1a;"></i>
+                            </div>
+                            <!--Right Payment-->
+                            <li class="nav-item" role="presentation">
+                                <a class="{% if current_step == 4 %} active {% endif %}" id="pills-Payment-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-Payment" role="tab"
+                                    aria-controls="pills-Payment" aria-selected="false" href="#">Payment
+                                </a>
+                            </li>
+                            <div class='fa'>
+                                <i class="fa-solid fa-circle-chevron-right fa-xl" style="color: #f4ba1a;"></i>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 class="page-title">Create Request</h3>
+            </div>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade {% if current_step == 1 %} show active {% endif %}" id="pills-info"
+                    role="tabpanel" aria-labelledby="pills-info-tab">
+                    <h3>Item Info <i class="fa-solid fa-circle-info fa-sm"></i></h3>
+                    <!--first step form-->
+                    <form method="POST" enctype="multipart/form-data">
+                        <b class="text-muted fs-5">Item Information</b><br />
+                        <div class="card bg-white mt-2 mb-5">
+                            <div class="card-body">
+                                {%csrf_token%}
+                                {% bootstrap_form request_form_1 %}
+                                {% if creating_request.picture %}
+                                <div class="flex-start">
+                                    <img src="{{creating_request.picture.url}}"
+                                        class="img-thumbnail shadow p-10 mb-1 bg-secondary"
+                                        style="width: 120px; height: 120px" alt="client-image">
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <input type='hidden' name='step' value='1'>
+                        <button type="submit" class="btn btn-success mt-2 mb-2">Save and Next</button>
+                    </form>
+                    <!--end-->
+                </div>
+                <div class="tab-pane fade {% if current_step == 2 %} show active {% endif %}" id="pills-Pickup"
+                    role="tabpanel" aria-labelledby="pills-Pickup-tab">
+                    <h3>Pick-Up <i class="fa-solid fa-truck-ramp-box fa-sm"></i></h3>
+                    <!--second step form-->
+                    <form method="POST" enctype="multipart/form-data">
+                        <b class="text-muted fs-5">Pick-Up Information</b><br />
+                        <div class="card bg-white mt-2 mb-5">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        {% csrf_token %}
+                                        {% bootstrap_form request_form_2 exclude='pickup_lat, pickup_lng' %}
+                                        <input hidden id='pickup_lat' name='pickup_lat' value="{{creating_request.pickup_lat}}" />
+                                        <input hidden id='pickup_lng' name='pickup_lng'value="{{creating_request.pickup_lng}}" />
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class=" shadow mt-2 mb-1 " id="pickup-map" style="width:500px; height:300px;"></div>
+                                        <div id="pickup-infowindow-content">
+                                            <img src="" width="15" height="15" id="pickup-place-icon"/>
+                                            <span id="pickup-place-name" class="title"></span><br />
+                                            <span id="pickup-place-address"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type='hidden' name='step' value='2'>
+                        <button type="submit" class="btn btn-secondary mt-2 mb-2 ml-2"
+                            onClick="$('#pills-info-tab').tab('show');">Return</button>
+                        <button type="submit" class="btn btn-success mt-2 mb-2 ml-2">Save and Next</button>
+                    </form>
+                    <!--end-->
+                </div>
+                <div class="tab-pane fade {% if current_step == 3 %} show active {% endif %}" id="pills-Delivery"
+                    role="tabpanel" aria-labelledby="pills-Delivery-tab">
+                    <h3>Delivery <i class="fa-solid fa-truck-fast fa-sm "></i></h3>
+                    <!--third step form-->
+                    <form method="POST" enctype="multipart/form-data">
+                        <b class="text-muted fs-5">Delivery Information</b><br />
+                        <div class="card bg-white mt-2 mb-5">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        {% csrf_token %}
+                                        {% bootstrap_form request_form_3 exclude='delivery_lat, delivery_lng' %}
+                                        <input hidden id='delivery_lat' name='delivery_lat'value="{{creating_request.delivery_lat}}" />
+                                        <input hidden id='delivery_lng' name='delivery_lng'value="{{creating_request.delivery_lng}}" />
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class=" shadow mt-2 mb-1 " id="delivery-map" style="width:500px; height:300px;"></div>
+                                        <div id="delivery-infowindow-content">
+                                            <img src="" width="15" height="15" id="pickup-place-icon"/>
+                                            <span id="delivery-place-name" class="title"></span><br />
+                                            <span id="delivery-place-address"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type='hidden' name='step' value='3'>
+                        <button type="submit" class="btn btn-secondary mt-2 mb-2 ml-2"
+                            onClick="$('#pills-Pickup-tab').tab('show');">Return</button>
+                        <button type="submit" class="btn btn-success mt-2 mb-2 ml-2">Save and Next</button>
+                    </form>
+                    <!--end-->
+                </div>
+                <div class="tab-pane fade {% if current_step == 4 %} show active {% endif %}" id="pills-Payment"
+                    role="tabpanel" aria-labelledby="pills-Payment-tab">
+                    <h3>Payment <i class="fa-solid fa-credit-card fa-sm"></i></h3>
+                    <!--third step form-->
+                    <form method="POST">
+                        <b class="text-muted fs-5">Payment</b><br />
+                        <div class="card bg-white mt-2 mb-5">
+                            <div class="card-body">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label>Your Card</label>
+                                    <input class="form-control" value="xxxx xxxx xxxx {{request.user.client.stripe_card_last_octet}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>Price</label>
+                                    <input class="form-control" value="{{creating_request.price}} EGP " disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="step" value="4">
+                        <button type="submit" class="btn btn-secondary mt-2 mb-2 ml-2"
+                            onClick="$('#pills-Delivery-tab').tab('show');">Return</button>
+                        <button type="submit" class="btn btn-success mt-2 mb-2 ml-2">Create Request</button>    
+                    </form>
+                    <!--end-->
+                </div>
+            </div>
+        </div>
+        <!--left side-->
+        <div class="col-lg-4">
+            <!-- Customer Notes -->
+            <div class="card mb-4 ">
+                <div class="card-body bg-dark shadow p-8 mb-1 bg-dark summary ">
+                    <h4 class="bg-warning task-summary text-center p-2">Package Details </h4>
+                    {% if not creating_request %}
+                    <p class="text-white text-center">The Summary Of Your Tasks Will Appear here</p>
+                    {% endif %}
+                    {% if current_step > 1 %}
+                    <div>
+                        <h5 class="p-2">Name : {{creating_request.name}}</h5>
+                        <h5 class="p-2">Amount : {{creating_request.amount}}</h5>
+                        <h5 class="p-2">Size : {{creating_request.get_size_display}}</h5>
+                        <div class="text-center">
+                            <img src="{{creating_request.picture.url}}"
+                                class="img-thumbnail shadow p-10 mb-1 bg-white summary "
+                                style="width: 120px; height: 120px" alt="client-image">
+                        </div>
+                        {% endif %}
+                        {% if current_step > 2 %}
+                        <h4 class="bg-warning task-summary text-center mt-2 p-2">Pick-Up Location</h4>
+                        <h5 class="p-2">{{creating_request.pickup_name}}</h5>
+                        <h6 class="p-2">{{creating_request.pickup_address}}</h6>
+                        <h6 class="p-2">{{creating_request.pickup_phone}}</h6>
+                        <hr>
+                        {% endif %}
+                        {% if current_step > 3 %}
+                        <h4 class="bg-warning task-summary text-center mt-2 p-2">Delivery Location</h4>
+                        <h5 class="p-2">{{creating_request.delivery_name}}</h5>
+                        <h6 class="p-2">{{creating_request.delivery_address}}</h6>
+                        <h6 class="p-2">{{creating_request.delivery_phone}}</h6>
+                        <hr>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

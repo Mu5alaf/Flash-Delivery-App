@@ -1,0 +1,73 @@
+{% extends "courier/layout.html" %}
+{% load static %}
+{% block head %}
+<script src="{% static 'js/courier_map.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div class="header">
+    <a href="{%url 'courier:available_task'%}" class="mr-2">
+        <i class="fa-solid fa-circle-chevron-left fa-lg pt-2 m-2" style="color: #000000;"></i>
+    </a>
+    <h5 class="pt-2 mb-2">Avalaibel Task</h5>
+</div>
+<div class="container bg-light mt-4 pt-3 pb-3 ">
+    <div class="row">
+        <div class="vtimeline-point ">
+            <div class="vtimeline-icon">
+                <i class="fa fa-image"></i>
+            </div>
+            <div class="vtimeline-block">
+                <div class="d-flex justify-content-center mt-5">
+                    <img src="{{task.picture.url}}" width="250" height="250" alt="item-pic" />
+                </div>
+                <h3 class="text-center mt-2">{{task.name}}</h3>
+                <ul class="post-meta list-inline text-center">
+                    <li class="list-inline-item">
+                        <p>Size:{{task.size}}</p>
+                    </li>
+                    <li class="list-inline-item">
+                        <p>{{task.amount}} item</p>
+                    </li>
+                    <li class="list-inline-item">
+                        <p>{{task.price}}EGP</p>
+                    </li>
+                </ul>
+                <p> {{task.description}}</p><br>
+            </div>
+            <div class="d-flex align-items-start flex-column">
+                <div class="mt-1">
+                    <h6>From</h6>
+                    <i class="fas fa-map-marker-alt m-1"></i>
+                    <large class="text-dark ml-2">{{task.pickup_address}}</large>
+                </div>
+                <div class="mt-2">
+                    <h6>To</h6>
+                    <i class="fas fa-flag-checkered m-1"></i>
+                    <large class="text-dark ml-2">{{task.delivery_address}}</large>
+                </div>
+            </div>
+            <hr>
+            <h5 class="text-secondary">Client</h5>
+            <div class="media justify-content-center mt-3">
+                {% if request.user.client.picture %}
+                <img class="task_img" src="{{request.user.client.picture.url}}" alt="Admin"
+                    class="rounded-circle border border-dark  user_profile_pic">
+                {% else %}
+                <img class="task_img" src="{% static 'images/client.png' %}" alt="Admin" class="rounded-circle">
+                {% endif %}
+                <div class="media-body m-2">
+                    <h5 class="text-muted m-2">{{task.client.user.get_full_name}}</h5>
+                    <span>{{task.client.phone_number}}</span>
+                </div>
+            </div>
+            <hr>
+            <div class="Accept-btn">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <button class="btn btn-success">Accept Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

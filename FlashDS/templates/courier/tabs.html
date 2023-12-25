@@ -1,0 +1,21 @@
+{% url 'courier:available_task' as available_task_hover %}
+{% url 'courier:current_task' as current_task_hover %}
+{% url 'courier:task_archive' as task_archive_hover %}
+{% url 'courier:Profile_page' as Profile_page_hover %}
+
+<!-- Tabs -->
+<div class="bottom-tabs d-flex">
+    <a class="{% if request.path == available_task_hover %} active {% endif %}" href="{% url 'courier:available_task' %}">
+        <i class="fa-solid fa-truck"></i>
+        <span>Available Tasks</span>
+    </a>
+    <a class="{% if request.path == current_task_hover or request.path == task_archive_hover  %} active {% endif %}" href="{% url 'courier:current_task' %}">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>My Tasks</span>
+    </a>
+    <a class="{% url 'courier:Profile_page' %} {% if request.path == Profile_page_hover %} active {% endif %}" href="{% url 'courier:Profile_page' %}">
+        <i class="fa-solid fa-user"></i>
+        <span>Profile</span>
+    </a>
+</div>
+<!-- ./Tabs -->

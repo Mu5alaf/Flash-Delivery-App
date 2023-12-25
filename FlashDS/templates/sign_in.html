@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% load bootstrap5 %}
+{% load static %}
+{% block content %}
+<section class="h-100 gradient-form" style="background-color: #eee;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-xl-10">
+                <div class="card rounded-3 text-black">
+                    <div class="row g-0">
+                        <div class="col-lg-6">
+                            <div class="card-body p-md-5 mx-md-4">
+                                <div class="text-center">
+                                    <div class="logo_warp">
+                                        <div class="Logo-flex">
+                                            <img class="login-logo" src="{% static 'images/logo.png' %}">
+                                        </div>
+                                        <div class="logo-content">
+                                            <h4 class="mt-1 mb-5 pb-1">Flash</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {%if request.GET.next != '/courier/'%}
+                                    <h1 class="text-center login_as_1 mb-5">Client</h1>
+                                    {%else%}
+                                    <h1 class="text-center login_as_2 mb-5">Courier</h1>
+                                    {% endif %}
+                                    <div class="form-outline mb-4">
+                                        {% bootstrap_form_errors form %}
+                                        {% bootstrap_label "Email" %}
+                                        {% bootstrap_field form.username show_label=False placeholder="Email" %}
+                                    </div>
+                                    <div class="form-outline mb-4">
+                                        {%bootstrap_field form.password%}
+                                    </div>
+                                    <div class="text-center pt-1 mb-5 pb-1">
+                                        <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
+                                            type="submit">Login</button>
+                                    </div>
+                                </form>
+                                <p class="tex-center mt-3">
+                                    Create an Account On Flash
+                                    <a href="/sign-up/?next={{request.Get.next}}"><strong>Sign up</strong></a>
+                                </p>
+                                <hr>
+                                <div class="with_google">
+                                {% load socialaccount %}
+                                <a href="{% provider_login_url 'google' %}?next={{ request.GET.next }}" class="btn btn-lg btn-block btn-primary " style="background-color: #dd4b39;"
+                                type="submit"><i class="fab fa-google me-2"></i> Sign in with Google</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                            <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                                <h1 class="mb-4">We are more than just a company</h1>
+                                <h5 class=" mb-0 company_disc">Redefining how you ship, track, collect, deliver all
+                                    through
+                                    innovative tech-solutions and efficient operations.</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

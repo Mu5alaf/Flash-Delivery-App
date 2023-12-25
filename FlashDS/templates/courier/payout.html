@@ -1,0 +1,21 @@
+{% extends "courier/layout.html" %}
+{% load bootstrap5 %}
+{% load static %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<!--header-->
+<div class="header">
+    <a href="{% url 'courier:Profile_page' %}" class="mr-2">
+    <i class="fa-solid fa-circle-chevron-left m-1 mb-2"></i>
+    </a>
+    <h5 class="mb-1">Profile</h5>
+</div>
+<div class="container-fluid" style="padding-top:80px">
+    <form method="POST">
+        {% csrf_token %}
+        {%bootstrap_form payout_form %}
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+</div>
+{% endblock %}

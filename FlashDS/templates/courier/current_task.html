@@ -1,0 +1,67 @@
+{% extends "courier/layout.html" %}
+{% load static %}
+{% block head %}
+<script
+    src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAP_API_KEY }}&callback=initMap&libraries=places&v=weekly&region=EG&language=en"
+    defer></script>
+<script src="{% static 'js/current_directions.js' %}"></script>
+<script>
+    var pickup_lat = parseFloat('{{ task.pickup_lat }}');
+    var pickup_lng = parseFloat('{{ task.pickup_lng }}');
+    var delivery_lat = parseFloat('{{ task.delivery_lat }}');
+    var delivery_lng = parseFloat('{{ task.delivery_lng }}');
+</script>
+{% endblock %}
+{% block content %}
+<div class="text-center m-3">
+    <a class="btn btn-outline-success active" href="{% url 'courier:current_task' %}">Current Task</a>
+    <a class="btn btn-outline-success" href="{% url 'courier:task_archive' %}">Done Task</a>
+</div>
+{% if task %}
+<div class="d-flex flex-column h-100" style="padding-bottom:40px">
+    <div id="map"></div>
+    <div class="card">
+        <div class="card-body p-2">
+            <div class="media" id="media-2">
+                <img src="{{task.picture.url}}" class="rounded-lg-mr-4 m-4" width="150px" height="150px">
+                <div class="media-body">
+                    <b>{{task.name}}</b>
+                    <div class="d-flex">
+                        <div class="flex-grow-1 mr-2">
+                            <small class="text-success">
+                                <i class="fas fa-car m-1"></i><span>{{task.distance}}</span>Km
+                                <i class="fas fa-clock m-1"></i><span>{{task.duration}}</span>Min
+                            </small>
+                            <div class="d-flex align-items-center mt-2">
+                                <i class="fas fa-map-marker-alt m-1"></i>
+                                <small class="text-secondary ml-2">{{task.pickup_address}}</small>
+                            </div>
+                            <div class="d-flex align-items-center mt-2">
+                                <i class="fas fa-flag-checkered m-1"></i>
+                                <small class="text-secondary ml-2">{{task.delivery_address}}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mt-2">
+                        <h4 id="price" class="text-muted">{{task.price}}</h4>
+                        <h5 class="text-muted">,EGP</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {%if task.status == 'Picking'%}
+        <a href="{% url 'courier:current_task_picture' task.id %}" class="btn btn-primary">Pick-Up Picture </a>
+        {% else %}
+        <a href="{% url 'courier:current_task_picture' task.id %}" class="btn btn-success">Delivered Picture </a>
+        {% endif %}
+    </div>
+{% include "courier/tabs.html" %}
+{% else %}
+<div class="text-center">
+    <p class="mt-5 text-muted">You Dont Have any Task </p>
+    <img class="no-task-img" src="{% static "images/empty.gif" %}"/>
+</div>
+    {% include "courier/tabs.html" %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "courier/layout.html" %}
+{% load static %}
+{% block content %}
+<div class="h-100 d-flex flex-column align-items-center justify-content-center">
+    <img src="{% static "images/done.gif" %}" class="mb-4" width="500" hight="500"/>
+    <p>Your Task Has Been Completed</p>
+    <a href="{% url 'courier:home'%}" class="btn btn-dark">Check available Task</a>
+</div>
+{% endblock %}
