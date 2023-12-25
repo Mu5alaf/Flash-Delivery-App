@@ -1,7 +1,7 @@
 # Flash Delivery System
 
 Flash Delivery System is a state-of-the-art Crowds Delivery platform designed to revolutionize the way people send and receive packages within specific regions. This project, built from the ground up, aims to set a new standard in the courier industry by providing a seamless, efficient, and user-centric delivery experience.
-#-----------------------------------------------------------------------------------
+
 1. Understanding Flash Application:
 
 Beyond being a mere courier service, Flash Delivery is a comprehensive solution that not only promises faster and more reliable shipping services but also guarantees the best rates in the industry. Its service portfolio includes advanced parcel tracking, convenient pick-up options, and a self-registered Cash on Delivery (COD) service, eliminating unnecessary wait times. What sets Flash apart is its dedicated customer service team, ready to assist users with any parcel tracking inquiries, ensuring a superior and hassle-free user experience.
@@ -105,3 +105,7 @@ To run Flash Delivery System, follow these steps:
 
 2. cd your_project_directory
 3. python manage.py runserver
+
+## Snap screen 
+![2](https://github.com/Mu5alaf/Flash-Delivery-App/assets/109148687/9777dd50-5d35-4bd3-8129-7991bb50cd8a)
+![1](https://github.com/Mu5alaf/Flash-Delivery-App/assets/109148687/d9185d3e-e7d9-4c48-86b1-ea0f16aacc19)
