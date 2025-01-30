@@ -106,6 +106,6 @@ To run Flash Delivery System, follow these steps:
 2. cd your_project_directory
 3. python manage.py runserver
 
-## Snap screen 
+## Snap screen
 ![2](https://github.com/Mu5alaf/Flash-Delivery-App/assets/109148687/9777dd50-5d35-4bd3-8129-7991bb50cd8a)
 ![1](https://github.com/Mu5alaf/Flash-Delivery-App/assets/109148687/d9185d3e-e7d9-4c48-86b1-ea0f16aacc19)
